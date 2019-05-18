@@ -195,6 +195,15 @@ class index{
 		}
 		$string1 = substr($string1,0,-1);
 		$signature = sha1($string1);
+
+        $ip = get_real_ip();
+        $ip='39.100.89.204';
+        $ipaddress = getIpAddress($ip);
+
+        $data['title'] = cityReplace($data['title'],$ipaddress,1);
+
+        var_dump($data);die;
+
 		include template('mobile', $template);
 	}
 	
