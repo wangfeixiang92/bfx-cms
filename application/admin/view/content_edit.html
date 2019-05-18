@@ -20,6 +20,18 @@
 			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>栏　　目：</label>
 			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box"><?php echo select_category('catid', $data['catid'], '≡ 请选择栏目 ≡', 0, '', true, true, $modelid); ?></span> </div>
 		</div>
+
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">开启城市匹配：</label>
+			<div class="formControls col-xs-10 col-sm-5">
+				<select name="city_match" class="select col-xs-4 col-sm-2" >
+					<option value="0" <?php echo empty($data['city_match']) ? 'selected' : '' ?>>关闭</option>
+					<option value="1" <?php echo $data['city_match'] == 1 ? 'selected' : '' ?>>开启</option>
+				</select>
+				<span onclick="showDescribe()" class="col-xs-8 col-sm-4 " style="font-size: 10px;font-weight: bold;color: #d9534f;cursor: pointer;"><i class="Hui-iconfont">&#xe6cd</i>怎么使用？</span>
+			</div>
+		</div>
+
 		<div class="row cl">
 			<label class="form-label col-xs-4 col-sm-2">自定义模板：</label>
 			<div class="formControls col-xs-8 col-sm-9">
@@ -275,6 +287,13 @@
 		if(!check) return false;
 		return true;
 	}
+
+    function showDescribe() {
+        layer.alert('<p>1、开启城市匹配模式</p><p>2、把需要替换的省级名称用[*province*]字符替换掉</p><p>3、把需要替换的市级名称用[*city*]字符替换掉</p><p>4、把需要替换的县区名称用[*area*]字符替换掉</p>')
+    }
+
+
+
 </script>
 
 </body>
