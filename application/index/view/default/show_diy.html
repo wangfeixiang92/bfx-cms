@@ -1,0 +1,198 @@
+<html>
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+	<title>{$title}</title>
+	<link href="//cdn.bootcss.com/weui/0.4.3/style/weui.min.css" rel="stylesheet">
+	<link href="{STATIC_URL}css/show_txv.css" rel="stylesheet" type="text/css">
+	<script src="{STATIC_URL}js/jquery-1.8.2.min.js"></script>
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+	</head>
+	<body>
+	{if $music}
+	<audio id="music" src="{$music}" autoplay="autoplay" loop="loop"></audio>    
+	<a id="audio_btn" style="position: fixed;margin-top: 15px;margin-left: -45px;left: 100%;">
+		<img src="{STATIC_URL}images/play.gif" width="35" height="35" id="music_btn" border="0">
+	</a>    
+	<script>
+	  (function() {
+		  function forceSafariPlayAudio() {
+			  audioEl.load(); // iOS 9   还需要额外的 load 一下, 否则直接 play 无效
+			  audioEl.play(); // iOS 7/8 仅需要 play 一下
+		  }
+		  var audioEl = document.getElementById('music');
+		  audioEl.addEventListener('loadstart', function() {
+			  console.log('loadstart');
+		  }, false);
+		  audioEl.addEventListener('loadeddata', function() {
+			  console.log('loadeddata');
+		  }, false);
+		  audioEl.addEventListener('loadedmetadata', function() {
+			  console.log('loadedmetadata');
+		  }, false);
+		  audioEl.addEventListener('canplay', function() {
+			  console.log('canplay');
+		  }, false);
+		  audioEl.addEventListener('play', function() {
+			  console.log('play');
+			  window.removeEventListener('touchstart', forceSafariPlayAudio, false);
+		  }, false);
+		  audioEl.addEventListener('playing', function() {
+			  console.log('playing');
+		  }, false);
+		  audioEl.addEventListener('pause', function() {
+			  console.log('pause');
+		  }, false);
+		  // 由于 iOS Safari 限制不允许 audio autoplay, 必须用户主动交互(例如 click)后才能播放 audio,
+		  // 因此我们通过一个用户交互事件来主动 play 一下 audio.
+		  window.addEventListener('touchstart', forceSafariPlayAudio, false);
+	  })();
+  </script>
+  <script>
+	$("#audio_btn").click(function(){
+		var music = document.getElementById("music");    
+		if(music.paused){    
+			music.play();
+			$("#music_btn").attr("src","{STATIC_URL}images/play.gif");
+		}else{
+			music.pause();    
+			$("#music_btn").attr("src","{STATIC_URL}images/stop.png");
+		}
+	});
+</script>
+{/if}
+<div class="page-con" id='click'>{$content}</div>
+<div id="zhezhao_share" class="share-a">
+	<img src="{STATIC_URL}images/fxq.png" id="share-wx-img" style="width: 100%; padding-right: 15px;">
+</div>
+<div class="weui_dialog_alert" id="dialog_alert" style="display:none;color:#000000">
+	<div class="weui_mask"></div>
+		<div class="weui_dialog">
+			<div class="weui_dialog_hd"><strong class="weui_dialog_title">温馨提示</strong></div>
+			<div class="weui_dialog_bd" id="dialog_alert_Mes" style="color:#000000"></div>
+			<div class="weui_dialog_ft">
+				<a onclick="dialog_alert_Hide();" id="okBtn" class="weui_btn_dialog primary">好</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	wx.config({
+		debug: false, 
+		appId:'{$appid}', 
+		timestamp:{$timestamp},
+		nonceStr:'{$noncestr}',
+		signature:'{$signature}',
+		jsApiList:['onMenuShareTimeline', 'onMenuShareAppMessage', 'hideAllNonBaseMenuItem', 'showMenuItems']
+	});
+	var num = 0;
+	var sharenum = {$sharenum};
+	wx.ready(function(){
+			wx.hideAllNonBaseMenuItem();
+		});
+</script>
+	<script>
+		function dialog_alert_Hide(){
+			$("#dialog_alert").hide();
+		}
+		function dialog_alert_Mes(mes){
+			$("#dialog_alert").show();
+			$("#dialog_alert_Mes").html(mes);
+		}
+		function show_tip(){
+			SDV();
+			dialog_alert_Mes(unescape('%u628A%u597D%u4E1C%u897F%u5206%u4EAB%u7ED9%u60A8%u7684%u670B%u53CB%u5427%uFF01%u53D1%u9001%u5230%u5FAE%u4FE1%u7FA4%u5373%u53EF%u7EE7%u7EED%u89C2%u770B%uFF01'));
+		}
+		function HDV(){
+			$("#zhezhao_share").hide();
+		}
+		function SDV(){
+			var music = document.getElementById("music"); 
+			music.pause();
+			$("#zhezhao_share").show();
+			var num = 0;
+			var sharenum = {$sharenum};
+			wx.ready(function(){
+					wx.hideAllNonBaseMenuItem();
+					wx.showMenuItems({menuList: ['menuItem:share:appMessage']});
+					wx.onMenuShareAppMessage({
+						title: '{$sharetitle}',
+						link: window.location.href.replace(xdomain,domain).split('?')[0],
+						imgUrl: domain +'{$thumb}',
+						desc: '{$sharedesc}',
+						success: function(res) {
+							setTimeout(function(){
+								var	str = res.errMsg;
+								if(str.indexOf("ok")>-1){
+									num++;
+									if(num >= sharenum){
+										wx.hideAllNonBaseMenuItem();
+										wx.showMenuItems({menuList: ['menuItem:share:timeline']});
+										dialog_alert_Mes('分享成功，剩下最后一步啦！请分享到<span style="font-size: 30px;color: #f5294c">朋友圈</span>即可观看！');
+									}else{
+										wx.hideAllNonBaseMenuItem();
+										wx.showMenuItems({menuList: ['menuItem:share:appMessage']});
+										dialog_alert_Mes('分享成功，还需分享<span style="font-size: 30px;color: #f5294c">' + (sharenum - num) + '</span>个不同的微信群即可观看（分享相同群无效）');
+									}
+								}else{
+									wx.hideAllNonBaseMenuItem();
+									wx.showMenuItems({menuList: ['menuItem:share:appMessage']});
+									dialog_alert_Mes('分享成功，还需分享<span style="font-size: 30px;color: #f5294c">' + (sharenum - num) + '</span>个不同的微信群即可观看（分享相同群无效）');
+								}
+							}, 500);
+						}
+					});
+					wx.onMenuShareTimeline({
+						title: '{$quntitle}',
+						link: window.location.href.replace(xdomain,domain).split('?')[0],
+						imgUrl: domain +'{$thumb}',
+						desc: '{$sharedesc}',
+						success: function(res) {
+							setTimeout(function(){
+								window.location.href= okurl;
+							}, 500);
+						}
+					});
+				});
+		}
+		$('#click').click(function(){
+			show_tip();
+		})
+	</script>
+	<script>
+		function in_array(domain, domainarr) {
+			for (s = 0; s < domainarr.length; s++) {
+			thisEntry = domainarr[s].toString();
+			if (thisEntry == domain) {
+			return true;
+			}
+		}
+			return false;
+		}
+		var xdomain = window.location.protocol+"//"+window.location.host;//现访问域名含http://协议
+		var safelink = '{$path}';//入口目录
+		var domain = safelink.split('/')[0]+'//'+safelink.split('/')[2];//入口域名
+
+		var domains = '{$domains}';//域名池
+		var cdomain = domains.split(',');//域名池数组
+		var mdomain = cdomain[parseInt(Math.random()*cdomain.length)];//随机域名池
+
+		var ddomains = '{$ddomain}';//落地域名
+		var ddomain = ddomains.split(',');//落地数组
+		var ndomain = ddomain[parseInt(Math.random()*ddomain.length)];//随机落地
+
+		if(xdomain == domain){//等于入口时跳转到域名池
+			window.location.href=window.location.href.replace(xdomain,mdomain);
+		}else if(in_array(xdomain,cdomain)){
+			document.cookie=xdomain;//记录cookie
+			document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {WeixinJSBridge.call('hideOptionMenu');});
+		}else if(in_array(xdomain,ddomain)){
+			if(window.location.href.indexOf('ok') < 0){
+				show_tip();
+			}
+		};
+		var okurl = '{$okurl}';
+	</script>
+	{$site['site_code']}
+	</body>
+	</html>

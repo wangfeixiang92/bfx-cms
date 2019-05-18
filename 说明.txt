@@ -1,0 +1,135 @@
+### 系统介绍
+
+本系统是一款轻量级裂变内容管理系统，采用OOP（面向对象）方式自主开发的框架。基于PHP+Mysql架构，并采用MVC框架式开发的一款高效的内容管理系统，可运行在Linux、Windows、MacOSX、Solaris等各种平台上。
+
+数据库操作采用PDO驱动，并采用预处理，系统更安全！
+
+专为裂变系统打造：
+
+1、后台管理全程可视化操作。
+
+2、含首页分类展示，集成公众号+视频+自定义三种模板（模板可额外定制）。
+
+3、支持域名池、落地域名多种跳转模式，更有效防封。（入口域名>>随机域名池>>落地域名）,域名池域名免加安全域名，主流域名更可免备案。
+
+4、URL支持 兼容模式、伪静态模式、短链接模式、伪静态模式+短链接多种模式，自定义伪静态支持以.jpg|.mp4|.***等任意后缀格式伪装，以及自动生成t.cn短链接。
+
+5、支持角色管理、权限管理、成员管理等多管理员功能。
+
+6、内容字段添加
+
+7、后台配置微信接口
+
+### 配置需求
+
+需要您的环境支持伪静态，Apache、Nginx、IIS等环境的伪静态配置，新手建议 php5.6 + Apache2.4，无需重新配置。
+伪静态配置如下：
+**Apache伪静态(即系统自带的.htaccess文件)：**
+    <IfModule mod_rewrite.c>
+    Options +FollowSymlinks -Multiviews
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php?s=$1 [QSA,PT,L]
+    </IfModule>
+
+**Nginx伪静态：**
+    location / {
+        #//...省略部分代码
+        if (!-e $request_filename){
+            rewrite  ^(.*)$  /index.php?s=$1  last;   break;
+        }
+    }
+    如果你的应用安装在二级目录，Nginx的伪静态方法设置如下，其中youdomain是所在的目录名称。
+    location /youdomain/ {
+        if (!-e $request_filename){
+            rewrite  ^/youdomain/(.*)$  /youdomain/index.php?s=$1  last;
+        }
+    }
+    例子：如果你用的是本机电脑上的phpstudy环境的话，打开配置文件( nginx/conf/vhost.conf )：
+    location / {
+        index  index.html index.htm index.php;
+        #autoindex  on;
+        if (!-e $request_filename) {
+            rewrite ^(.*)$ /index.php?s=$1 last; break;
+        }			
+    }
+    90%的情况下，Nginx的以上配置是完全没问题的，如果你用的是老古董的话，那么你可以尝试修改qifancms配置文件：
+    “common/config/config.php”，修改 配置项 “set_pathinfo” 为 true 来实现！
+
+**IIS伪静态：**
+    如果你的服务器环境支持ISAPI_Rewrite的话，可以配置httpd.ini文件，添加下面的内容：
+
+    RewriteRule (.*)$ /index\.php\?s=$1 [I]
+
+    在IIS的高版本下面可以配置web.config，在中间添加rewrite节点：
+    <rewrite>
+        <rules>
+            <rule name="OrgPage" stopProcessing="true">
+            <match url="^(.*)$" />
+            <conditions logicalGrouping="MatchAll">
+            <add input="{HTTP_HOST}" pattern="^(.*)$" />
+            <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+            <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+            </conditions>
+            <action type="Rewrite" url="index.php?s={R:1}" />
+            </rule>
+        </rules>
+    </rewrite>
+**如果以上都无法正确配置，请上网查阅针对性伪静态配置，或咨询客服。**
+
+
+### 安装
+
+运行 “你的网址/install.php”，按照安装提示说明进行程序安装。
+
+管理后台地址：“你的网址/admin”。
+
+如果显示404，请参考以上伪静态配置！
+
+**后台地址不可修改，您也不必担心网站安全问题，不会存在安全隐患，请放心使用！**
+**首次使用，进入后更新一下所有URL**
+
+
+### 分类及模板说明
+
+系统自带三个分类，分别为视频、文章、图片。模板对应为纯视频、公众号带视频、自定义（可以栏目内设置），所有模板均为默认分享一次朋友圈，分享群次数后台设置。
+
+添加内容时，可再次选择自定义模板，当选择自定义模板后，内容将以自定义模板。
+
+添加内容的所有字段均需要填
+
+1、纯视频、公众号带视频模板时，分享成功后跳转地址如不填则分享成功后返回继续观看。“腾讯视频VID”和“视频文件或地址”只填其一，视频文件或地址需为mp4|ogg|WebM格式，可上传也可填链接。
+
+2、自定义模板显示内容为富文本编辑框内的内容，内容图片宽度默认为自适应(满屏)。
+
+### URL模式
+
+1、兼容模式：格式为/index/index/catid/*/id/**.html.
+
+2、伪静态模式：以URL规则模式，URL规则设置：系统管理 > 系统设置 > 前端URL规则.
+
+3、短链接模式：以兼容模式的URL生成的短链接.
+
+4、短链接+伪静态模式:以伪静态规则生成的URL，再生成短链接.
+
+### 域名说明
+
+1、入口域名：即访问时的域名，本系统默认为安装时根网址址，需加入公众号安全域名，支持填一个。如需更改，系统管理 > 站点根网址。（如系统未安装在根目录，请加上目录名，以/结束）.
+
+2、域名池：即访问时一次跳转的域名，可填多个，随机从域名池选取。此域名无需加入公众号安全域名，主流域名微信不限制访问，可不用备案。为了安全，此页面不允许分享等微信动作。
+
+3、落地域名：即强制分享时的域名，需加入公众号安全域名，可填多个。
+
+
+###关于上传的问题
+
+1、如需上传大文件，请在服务器相关设置里，设置最大上传文件大小，php.ini里的upload_max_filesize;
+
+2、取决于你的上传速度，如果服务器有超时限制，请把超时时间设置为大于上传所需的时间。
+
+###关于跑流量的问题
+1、跑流量要有足够吸引人的视频，具体视频因你的目标粉丝群体而定
+2、要有足够的启动量，一般而言至少同时在线IP100+以上
+3、除了技术，跟经验也有很大的关系，需要不断的揣摩客户心理
+4、跑起来的流量建议引导到公众号或者小程序甚至APP留存

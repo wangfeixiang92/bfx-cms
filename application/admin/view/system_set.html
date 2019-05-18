@@ -1,0 +1,160 @@
+<?php include $this->admin_tpl('meta');?>
+<title>系统设置 - QifanCMS裂变管理系统</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 系统设置 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+	<form class="form form-horizontal" method="post" action="<?php echo U('save');?>" onsubmit="return check_all()">
+		<div id="tab_system" class="HuiTab">
+			<div class="tabBar cl"><span>基本设置</span></div>
+			<div class="tabCon">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>站点根网址：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" placeholder="入口域名(非根目录时需加上目录名)，需加入安全域名，如：http://www.qifan.co/" name="site_url" value="<?php echo $data["site_url"];?>" class="input-text" style="width:50%"> <a href="<?php echo SITE_URL;?>index.php?m=mobile" target="_blank" style="font-size:12px;text-decoration:none;line-height:22px"  title="手机站点"><i class="Hui-iconfont">&#xe696;</i>WAP</a>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>域名池：<br><span style="color:#888">中途实际访问域名，多个域名请用英文逗号“,”分割，不用加入安全域名，.com.cn等主流域名也可不备案。</span><span class="c-red">*注：不能为空,不能与入口相同,如只有一个主域名,请使用二级域名.例如：http://abc.baidu.com</span><br></label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<textarea class="textarea" name="admin_domains"><?php echo $data["admin_domains"];?></textarea>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>落地域名：<br><span style="color:#888">分享时的域名，需安全域名，多个域名请用英文逗号“,”分割.</span><span class="c-red">*注：不能为空,不能与入口相同,如只有一个主域名,请使用二级域名.例如：http://abc.baidu.com</span></label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<textarea class="textarea" name="admin_ddomain" placeholder="分享时的域名，需安全域名，多个域名请用英文逗号“,”分割"><?php echo $data["admin_ddomain"];?></textarea>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>前端URL规则：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<label class="label_radio"><input name="url_rule" type="radio" <?php if($data["url_rule"] == 0) echo 'checked' ?> value="0"> 兼容模式</label>
+						<label class="label_radio"><input name="url_rule" type="radio" <?php if($data["url_rule"] == 1) echo 'checked' ?> value="1"> 伪静态模式</label>
+						<label class="label_radio"><input name="url_rule" type="radio" <?php if($data["url_rule"] == 2) echo 'checked' ?> value="2"> 短链接模式</label>
+						<label class="label_radio"><input name="url_rule" type="radio" <?php if($data["url_rule"] == 3) echo 'checked' ?> value="3"> 短链接+伪静态模式</label>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red"></span>前端访问：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<label class="label_radio"><input name="limit" type="radio" <?php if($data["limit"] == 0) echo 'checked' ?> value="0"> 无限制</label>
+						<label class="label_radio"><input name="limit" type="radio" <?php if($data["limit"] == 1) echo 'checked' ?> value="1"> 只允许移动端</label>
+						<label class="label_radio"><input name="limit" type="radio" <?php if($data["limit"] == 2) echo 'checked' ?> value="2"> 只允许微信(PC+移动端)</label>
+						<label class="label_radio"><input name="limit" type="radio" <?php if($data["limit"] == 3) echo 'checked' ?> value="3"> 只允许手机微信端</label>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>限制访问时URL：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" placeholder="在限制访问浏览器时跳转的地址" name="limiturl" value="<?php echo $data["limiturl"];?>" class="input-text" style="width:50%">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">统计代码：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<textarea class="textarea" name="site_code" style="width:80%"><?php echo $data["site_code"];?></textarea>
+					</div>
+				</div>					
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>允许上传附件类型</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="upload_types" value="<?php echo $data["upload_types"];?>"  class="input-text w_420">
+						<span style="color:#888">[多个类型直接用“|”分开]</span>
+					</div>
+				</div>		
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>允许上传附件大小（KB）</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="upload_maxsize" value="<?php echo $data["upload_maxsize"];?>"  class="input-text w_120">
+						<span style="color:#888">[最大限制不能超过服务器“upload_max_filesize”配置]</span>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>选择上传附件插件类型</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<label class="label_radio"><input name="ishtml5" type="radio" <?php echo $data["ishtml5"]? 'checked' : '' ?> value="1"> HTML5版本</label>
+						<label class="label_radio"><input name="ishtml5" type="radio" <?php echo $data["ishtml5"]? '' : 'checked' ?> value="0"> FLASH版本</label>
+						<span style="color:#888">[html5版本支持PC与手机端，flash版本兼容低版本浏览器]</span>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">禁止登录后台的IP列表：<br><span style="color:#888">匹配IP段用“*”占位<br>多个IP用“,”分割</span></label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<textarea class="textarea" name="admin_prohibit_ip" placeholder="匹配IP段用“*”占位，如192.168.*.*，多个IP地址请用英文逗号“,”分割"><?php echo $data["admin_prohibit_ip"];?></textarea>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2"><span class="c-red"></span>新浪source(无法生成短地址时更改)：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" placeholder="不能正常生成短链接时需更改" name="source" value="<?php echo $data["source"];?>" class="input-text" style="width:50%">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">启用后台管理操作日志：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<label class="label_radio"><input name="admin_log" type="radio" <?php echo $data["admin_log"]? 'checked' : '' ?> value="1"> 开启</label>
+						<label class="label_radio"><input name="admin_log" type="radio" <?php echo $data["admin_log"]? '' : 'checked' ?> value="0"> 关闭</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+				
+				<input type="submit" class="btn btn-primary radius" name="dosubmit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
+				<input type="reset" class="btn btn-default radius" value="&nbsp;&nbsp;取消&nbsp;&nbsp;">
+			</div>
+		</div>
+	</form>
+</div>
+
+<?php include $this->admin_tpl('footer');?>
+
+<script type="text/javascript">
+function check_all(){
+	var reg = /^http(.+)\/$/;
+	if($("input[name='site_name']").val()==''){
+		layer.alert('站点名称不能为空！');
+		return false;
+	}
+	if(!reg.test($("input[name='site_url']").val())){
+		layer.alert('站点根网址格式为：http://www.qifan.co/，请以“/”结尾！');
+		return false;
+	}
+	if($("input[name='upload_maxsize']").val()=='' || isNaN($("input[name='upload_maxsize']").val())){
+		layer.alert('允许上传附件大小只能为数字！');
+		return false;
+	}
+	if($("input[name='upload_types']").val()==''){
+		layer.alert('允许上传附件类型不能为空！');
+		return false;
+	}
+	if($("input[name='watermark_name']").val()==''){
+		layer.alert('水印图片名称不能为空！');
+		return false;
+	}
+	return true;			
+}
+function test_mail() {
+	var mail_to = $("input[name='mail_to']").val();
+	if(mail_to == ''){
+		layer.alert('请输入邮件测试地址！');
+		return false;
+	}
+	$.ajax({
+		type: 'POST',
+		url: '<?php echo U('public_test_mail');?>', 
+		data: "mail_to="+mail_to,
+		success: function (msg) {
+			layer.alert(msg);
+		}
+	})
+}
+$(function(){
+	$.Huitab("#tab_system .tabBar span","#tab_system .tabCon","current","click","<?php echo isset($_GET['tab']) ? intval($_GET['tab']) : '0'?>");
+});
+</script>
+
+</body>
+</html>

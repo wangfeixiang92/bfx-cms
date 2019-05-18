@@ -1,0 +1,281 @@
+<?php include $this->admin_tpl('meta');?>
+<title>编辑内容 - QifanCMS裂变管理系统</title>
+<script type="text/javascript" src="<?php echo STATIC_URL;?>plugin/laydate/1.1/laydate.js"></script>
+<script type="text/javascript" charset="utf-8" src="<?php echo STATIC_URL;?>plugin/ueditor/1.4.3.3/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="<?php echo STATIC_URL;?>plugin/ueditor/1.4.3.3/ueditor.all.min.js"> </script>
+<script type="text/javascript" charset="utf-8" src="<?php echo STATIC_URL;?>plugin/ueditor/1.4.3.3/lang/zh-cn/zh-cn.js"></script>
+<script src="<?php echo STATIC_URL;?>js/jquery-1.8.2.min.js"></script>
+<style>.date{height:30px;padding:4px;width:265px;font-size:14px}.Hui-tags-token{color:#353535;}</style>
+</head>
+<body>
+<article class="page-container">
+	<form class="form form-horizontal" onsubmit="return checkall()" method="post">
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>标　　题：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text" value="<?php echo $data['title'];?>"  name="title">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>栏　　目：</label>
+			<div class="formControls col-xs-8 col-sm-9"> <span class="select-box"><?php echo select_category('catid', $data['catid'], '≡ 请选择栏目 ≡', 0, '', true, true, $modelid); ?></span> </div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">自定义模板：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<span class="select-box">
+				<select name="diytpl" class="select" id="diytpl">
+					<option value="">跟随栏目</option>
+					<?php 
+						foreach($show_temp as $key => $val){
+								$str = $key==$data['diytpl'] ? ' selected="selected" ' : '';
+								echo '<option value="'.$key.'"'.$str.'>'.$val.'('.$key.')</option>';
+						}
+					?>
+				</select>
+				</span>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">发布时间：</label>
+			<div class="formControls col-xs-8 col-sm-9">
+				<input type="text" class="input-text laydate-icon" style="width:265px;height:30px;" name="inputtime" value="<?php echo date('Y-m-d H:i:s', $data['inputtime']); ?>" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">缩略及分享图：</label>
+			<div class="formControls col-xs-8 col-sm-9" style="height:31px;">
+				<div class="uploader-thum-container">
+				<?php echo form::image('thumb', $data['thumb'], 'width:400px', true);?>
+				</div>
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-xs-4 col-sm-2">底部广告图：</label>
+			<div class="formControls col-xs-8 col-sm-9" style="height:31px;">
+				<div class="uploader-thum-container">
+				<?php echo form::image('adimg', $data['adimg'], 'width:400px', true);?>
+				</div>
+			</div>
+		</div>
+		<div class="row cl gzh txv">
+				<label class="form-label col-xs-4 col-sm-2">视频文件或地址：</label>
+				<div class="formControls col-xs-8 col-sm-9" style="height:31px;">
+					<div class="uploader-thum-container">
+					<?php echo form::attachment('videofile',$data['videofile'], 'width:400px');?>
+					</div>
+				</div>
+			</div>
+			<div class="row cl gzh txv">
+				<label class="form-label col-xs-4 col-sm-2">腾讯视频VID：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" style="width:450px" value="<?php echo $data['vid'];?>"  name="vid" placeholder="腾讯VID和视频地址只填其一">  
+				</div>
+			</div>
+			<div class="row cl gzh txv">
+				<label class="form-label col-xs-7"><span class="c-red">***</span>“腾讯视频VID”和“视频文件或地址”只填其一，视频文件或地址需为mp4|ogg|WebM格式，可上传也可填链接。</label>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2">点击：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" style="width:100px" value="<?php echo $data['click'];?>"  name="click">
+					<span class="qifancms_small">点击后退链接：<input type="text" class="input-text" style="width:450px" value="<?php echo $data['backurl'];?>"  name="backurl"></span>
+					<span class="qifancms_small">分享群次数：<input type="text" class="input-text" style="width:100px" value="<?php echo $data['sharenum'];?>"  name="sharenum" placeholder="建议3次以内"></span>   
+				</div>
+			</div>
+			<div class="row cl txv gzh">
+				<label class="form-label col-xs-4 col-sm-2">点赞：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" style="width:100px" value="<?php echo $data['dianzan'];?>"  name="dianzan">
+					<span class="qifancms_small">评论：<input type="text" class="input-text" style="width:100px" value="<?php echo $data['ping'];?>"  name="ping"></span>
+					<span class="qifancms_small">提示分享时间：<input type="text" class="input-text" style="width:100px" value="<?php echo $data['sharetime'];?>"  name="sharetime" placeholder="以秒为单位"></span>
+				</div>
+			</div>
+			<div class="row cl gzh">
+				<label class="form-label col-xs-4 col-sm-2">公众号名称：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" style="width:100px" value="<?php echo $data['gzhname'];?>"  name="gzhname">
+					<span class="qifancms_small">作&nbsp;&nbsp;&nbsp;者：<input type="text" class="input-text" style="width:100px" value="<?php echo $_SESSION['admininfo']['nickname'] ? $_SESSION['admininfo']['nickname'] : '管理员'; ?>"  name="nickname"></span>  
+				</div>
+			</div>
+			<div class="row cl gzh">
+					<label class="form-label col-xs-4 col-sm-2">公众号链接：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" class="input-text" style="width:550px" value="<?php echo $data['gzhurl'];?>"  name="gzhurl">
+						<span class="qifancms_small">阅读全文链接：<input type="text" class="input-text" style="width:550px" value="<?php echo $data['quanwenurl'];?>"  name="quanwenurl" placeholder="留空时点击阅读全文弹出分享"></span>
+					</div>
+				</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2">点击广告链接：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" style="width:450px" value="<?php echo $data['adurl'];?>"  name="adurl">  
+					<span class="qifancms_small">分享成功链接：<input type="text" class="input-text" style="width:450px" value="<?php echo $data['okurl'];?>"  name="okurl" placeholder="留空则分享完继续观看"></span>
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2">分 享 标 题：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" style="width:450px" value="<?php echo $data['sharetitle'];?>"  name="sharetitle">  
+					<span class="qifancms_small">分 享 描 述：<input type="text" class="input-text" style="width:450px" value="<?php echo $data['sharedesc'];?>"  name="sharedesc"></span>
+				</div>
+			</div>
+			<div class="row cl diy">
+				<label class="form-label col-xs-4 col-sm-2">音乐地址：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" style="width:450px" value="<?php echo $data['music'];?>"  name="music">  
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-2">限制访问时跳转URL：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text"style="width:450px" value="<?php echo $data['limiturl'];?>"  name="limiturl" placeholder="未到允许访问的浏览器时，跳转至此地址">  
+				</div>
+			</div>
+			<?php echo $string;?>
+			<div class="row cl gzh diy">
+				<label class="form-label col-xs-4 col-sm-2">内容：</label>
+				<div class="formControls col-xs-8 col-sm-9"> 
+				<?php echo form::editor('content',$data['content'], 'width:100%;height:400px', false);?>
+				<label title="提取内容第一张图片为缩略图"><input name="auto_thum" type="checkbox" id="readpact" value="1" checked="checked"/>提取内容第一张图片为缩略图</label>
+				<label title="远程图片本地化" class="qifancms_small"><input name="grab_img" type="checkbox" value="1"/>远程图片本地化</label>	
+				</div>
+			</div>
+			<div class="row cl">
+				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+					<input type="hidden" name="status" value="1">
+					<button name="dosubmit" class="btn btn-primary radius" type="submit" onclick="set_status(1)"><i class="Hui-iconfont">&#xe632;</i> 保存并提交审核</button>
+					<button name="dosubmit" class="btn btn-secondary radius" type="submit" onclick="set_status(0)"><i class="Hui-iconfont">&#xe632;</i> 保存草稿</button>
+					<button onclick="myclose()" class="btn btn-default radius" type="button">&nbsp;&nbsp;关闭&nbsp;&nbsp;</button>
+				</div>
+			</div>
+			<input type="hidden"  value="10"  name="listorder">
+		</form>
+	</article>
+
+<?php include $this->admin_tpl('footer');?>
+<script type="text/javascript">
+	$(function () {
+		if($("#diytpl").val() == ''){
+			if($("#select").val() == 1){
+				$(".txv,.diy").hide();
+				$(".gzh").show();
+			}else if($("#select").val() == 2){
+				$(".gzh,.diy").hide();
+				$(".txv").show();
+			}else if($("#select").val() == 3){
+				$(".gzh,.txv").hide();
+				$(".diy").show();
+			}else{
+				$(".gzh,.txv,.diy").hide();
+			};
+		}else{
+			if($("#diytpl").val() == 'show_gzh'){
+				$(".txv,.diy").hide();
+				$(".gzh").show();
+			}else if($("#diytpl").val() == 'show_txv'){
+				$(".gzh,.diy").hide();
+				$(".txv").show();
+			}else if($("#diytpl").val() == 'show_diy'){
+				$(".gzh,.txv").hide();
+				$(".diy").show();
+			}else{
+				$(".gzh,.txv,.diy").hide();
+			};
+		};
+		$("#diytpl").bind("change",function () {
+			if(this.value== "show_gzh"){
+				$(".txv,.diy").hide();
+				$(".gzh").show();
+			}else if(this.value == "show_txv"){
+				$(".gzh,.diy").hide();
+				$(".txv").show();
+			}else if(this.value == "show_diy"){
+				$(".gzh,.txv").hide();
+				$(".diy").show();
+			}else if(this.value == ''){
+				if($("#select").val() == 1){
+					$(".txv,.diy").hide();
+					$(".gzh").show();
+				}else if($("#select").val() == 2){
+					$(".gzh,.diy").hide();
+					$(".txv").show();
+				}else if($("#select").val() == 3){
+					$(".gzh,.txv").hide();
+					$(".diy").show();
+				}else{
+					$(".gzh,.txv,.diy").hide();
+				};
+			}else{
+				$(".gzh,.txv,.diy").hide();
+			}
+		});
+		$("#select").bind("change",function () {
+			if($("#diytpl").val() == ''){
+				if($("#select").val() == 1){
+					$(".txv,.diy").hide();
+					$(".gzh").show();
+				}else if($("#select").val() == 2){
+					$(".gzh,.diy").hide();
+					$(".txv").show();
+				}else if($("#select").val() == 3){
+					$(".gzh,.txv").hide();
+					$(".diy").show();
+				}else{
+					$(".gzh,.txv,.diy").hide();
+				};
+			}
+		})
+	});
+</script>
+<script type="text/javascript">
+	function set_top(){
+		if($('#settop').get(0).checked){
+			$("input[name='listorder']").val('1');
+		}else{
+			$("input[name='listorder']").val('10');
+		}	
+	}
+	
+	function set_status(s){
+		$("input[name='status']").val(s);	
+	}
+	
+	function toggle(){ 
+        $("#url").toggle();
+    }
+
+	function myclose(){
+		if(UE.getEditor('content').getContent()!=''){
+			layer.confirm('内容未保存，确定要关闭吗？',function(index){
+				qifancms_close();
+			});
+		}else{
+			qifancms_close();
+		}
+	}
+	
+	function checkall(){
+		if($("input[name='title']").val()==''){//||$("input[name='seo_title']").val()==''
+			layer.msg('标题不能为空！', {icon:2,time: 2000});
+			return false;
+		}
+		if($("select[name='catid']").val()=='0'){
+			layer.msg('请选择栏目！', {icon:2,time: 2000});
+			return false;
+		}
+		var check = true;
+		$(".required").each(function(){
+			if($(this).val() == ''){
+			  layer.msg($(this).attr('errortips'), {icon:2,time: 2000});
+			  $(this).focus();
+			  check = false;
+			  return false;
+			}
+		})
+		if(!check) return false;
+		return true;
+	}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,198 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
+	<link href="{SITE_PATH}other/show_gzh.css" rel="stylesheet">
+	<link href="//cdn.bootcss.com/weui/0.4.3/style/weui.min.css" rel="stylesheet">
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+	<script src="{SITE_PATH}other/jquery.min.js"></script>
+	<script src="{SITE_PATH}other/qifan.js"></script>
+	<title>{if $gzhname}{$gzhname}{else}{$title}{/if}</title>
+</head>
+<body id="activity-detail" class="zh_CN mm_appmsg appmsg_skin_default appmsg_style_default rich_media_empty_extra">
+<link rel="dns-prefetch" href="//res.wx.qq.com">
+<link rel="dns-prefetch" href="//mmbiz.qpic.cn">
+<link rel="shortcut icon" type="image/x-icon" href="//res.wx.qq.com/mmbizwap/zh_CN/htmledition/images/icon/common/faviconsharenumsharenumc41b.ico">
+<div id="js_article" class="rich_media">
+    <div id="js_top_ad_area" class="top_banner"></div>
+    <div class="rich_media_inner">
+        <div id="page-content" class="rich_media_area_primary">
+			<div class="rich_media_area_primary_inner">
+				<div id="img-content">
+					<hsharenum class="rich_media_title" id="activity-name"> 
+						{$title}
+					</hsharenum>                    
+					<div id="meta_content" class="rich_media_meta_list">
+						<span class="rich_media_meta rich_media_meta_text">{$nickname}</span>
+						<span class="rich_media_meta rich_media_meta_nickname" id="profileBt">
+							<a href="{$gzhurl}" id="js_name">{$gzhname}</a>
+						</span>
+						<em id="publish_time" class="rich_media_meta rich_media_meta_text">{date("n",$inputtime)}月{date("j",$inputtime)}日</em>
+					</div>
+					<div class="page-con">{$content}</div>
+				</div>
+			</div>
+			<div class="page-bottom">
+				{if $quanwenurl}<span class="page-all">阅读全文</span>&nbsp;&nbsp;&nbsp;&nbsp;{/if}
+				<span class="page-du">阅读&nbsp;<span class="page-click">{$click}<span>&nbsp;</span>
+				<span class="page-zan">
+					<img class="down" src="{SITE_PATH}other/thum_down.png" style="height:16px">
+					<img class="up" src="{SITE_PATH}other/thum_up.png" style="height:16px;display:none;">
+					<span id="dianzan">{$dianzan}</span>
+				</span>
+			</div>
+			<div class="page-ad">
+				<span class="page-ad-t">
+					<span class="page-l">--------------------------------------------------------------------------------</span>
+					<span class="page-c">广告∨</span>
+					<span class="page-r">--------------------------------------------------------------------------------</span>
+				</span>
+				<span class="page-d"><a href="http://code.yianju.ltd/qifanart/pubilc/tousu/">投诉</a></span>
+				<span class="page-ad-d"><a href="{$adurl}"><img src="{$adimg}" /></a></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="zhezhao_share" class="share-a">
+    <img src="{SITE_PATH}other/fxq.png" id="share-wx-img" style="width: 100%; padding-right: 15px;">
+</div>
+<div class="weui_dialog_alert" id="dialog_alert" style="display:none;color:#000000">
+	<div class="weui_mask"></div>
+	   <div class="weui_dialog">
+		   <div class="weui_dialog_hd"><strong class="weui_dialog_title">温馨提示</strong></div>
+		   <div class="weui_dialog_bd" id="dialog_alert_Mes" style="color:#000000"></div>
+		   <div class="weui_dialog_ft">
+			   <a onclick="dialog_alert_Hide();" id="okBtn" class="weui_btn_dialog primary">好</a>
+		   </div>
+	   </div>
+	</div>
+</div>
+<script>
+	wx.config({
+		debug: false, // 调试模式
+		appId:'{$appid}', //公众号的唯一标识
+		jsapi_ticket:'{$ticket}',
+		timestamp:{$timestamp},//时间戳
+		nonceStr:'{$noncestr}',//随机串
+		signature:'{$signature}',//签名
+		jsApiList:['onMenuShareTimeline','onMenuShareAppMessage']//需要使用的JS接口列表
+	});
+	var qunnum = 0;
+	var pyqnum =0;
+	var sharenum = {$sharenum};//分享的次数
+	shareData = {
+			title: '{$sharetitle}', // 标题
+			desc:'{$sharedesc}', // 描述
+			link:'', // 链接
+			imgUrl:'{$shareimg}', // 图片
+			type: '', //不填默认为link
+			dataUrl: '', // 如果type是music或video
+			success: function (e) {
+				setTimeout(function(){
+					if(e.errMsg.search("ok") != -1){//回调成功
+						if(e.errMsg.search("sendAppMessage") != -1){//成功分享
+							qunnum++;
+							if(pyqnum >=1 && qunnum >=sharenum){//数字sharenum是分享群的次数
+								window.location.href="http://<?php echo $urls;?>"; //分享完成后跳转
+							}else if(qunnum >= sharenum && pyqnum <1){
+								dialog_alert_Mes('分享成功，剩下最后一步啦！请分享到<span style="font-size: 30px;color: #f5294c">朋友圈</span>即可观看！');
+							}else{
+								dialog_alert_Mes('分享成功，还需分享<span style="font-size: 30px;color: #f5294c">' + (sharenum - qunnum) + '</span>个不同的微信群即可观看（分享相同群无效）');
+							}
+						}else if(e.errMsg.search("shareTimeline") != -1){//成功分享至朋友圈
+							pyqnum++;
+							if(qunnum >=sharenum){
+								window.location.href="http://<?php echo $urls;?>"; //分享完成后跳转
+							}else{
+								dialog_alert_Mes('分享成功，还需分享<span style="font-size: 30px;color: #f5294c">' + (sharenum - qunnum) + '</span>个不同的微信群即可观看（分享相同群无效）');
+							}
+						}else{//分享至其他地方
+							if(qunnum <sharenum ){
+								dialog_alert_Mes('分享成功，还需分享<span style="font-size: 30px;color: #f5294c">' + (sharenum - qunnum) + '</span>个不同的微信群即可观看（分享相同群无效）');
+							}else if(qunnum >=sharenum){
+								dialog_alert_Mes('分享成功，剩下最后一步啦！请分享到<span style="font-size: 30px;color: #f5294c">朋友圈</span>即可观看！');
+							}else{
+								dialog_alert_Mes('把好东西分享给您的朋友吧！发送到微信群即可观看视频！');
+							}
+						}
+					}
+				}, 500);
+			},
+			cancel: function () {//未分享成功
+				setTimeout(function(){
+					if(qunnum <sharenum ){
+							dialog_alert_Mes('分享成功，还需分享<span style="font-size: 30px;color: #f5294c">' + (sharenum - qunnum) + '</span>个不同的微信群即可观看（分享相同群无效）');
+						}else if(qunnum >=sharenum){
+							dialog_alert_Mes('分享成功，剩下最后一步啦！请分享到<span style="font-size: 30px;color: #f5294c">朋友圈</span>即可观看！');
+						}else{
+							dialog_alert_Mes('把好东西分享给您的朋友吧！发送到微信群即可观看视频！');
+						}
+				}, 500);
+			}
+		}
+	wx.ready(function(){
+		// 分享到朋友圈
+		wx.onMenuShareTimeline(shareData);
+		// 分享给好友
+		wx.onMenuShareAppMessage(shareData);
+	});
+</script>
+<script>
+	function dialog_alert_Hide(){
+		$("#dialog_alert").hide();
+	}
+	function dialog_alert_Mes(mes){
+		$("#dialog_alert").show();
+		$("#dialog_alert_Mes").html(mes);
+	}
+	function show_tip(){
+		SDV();
+		dialog_alert_Mes('把好东西分享给您的朋友吧！发送到微信群即可继续观看！');
+	}
+	function SDV(){
+		$("#zhezhao_share").show();
+	}
+	function HDV(){
+		$("#zhezhao_share").hide();
+	}
+	var znum = Number($('#dianzan').html());
+	$('.page-zan').click(function(){
+		if($(".down").is(":hidden")){
+			$('.down').show();
+			$('.up').hide();
+			$('#dianzan').html(znum);
+		}else{
+			$('.down').hide();
+			$('.up').show();
+			$('#dianzan').html(znum + 1);
+		}
+	});
+    $('.page-all').click(function(){
+		show_tip();
+	});
+	$('.page-c').click(function(){
+		$('.page-d').toggle();
+	});
+	if($('.page-con video').width() > $(window).width()){
+		$('.page-con video').css('width','100%');
+	}
+	if($('.page-con img').width()> $(window).width()){
+		$('.page-con img').css('width','100%');
+	}
+	if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+		$('.page-con video').attr({'id':'video','preload':'auto','webkit-playsinline':'true','x5-video-player-fullscreen':'true','x-webkit-airplay':'allow','x5-video-player-type':'h5','x5-video-orientation':'portraint','playsinline':'true','controls':'controls'});
+	} else if (/(Android)/i.test(navigator.userAgent)) {
+		$('.page-con video').attr({'id':'video','preload':'auto','webkit-playsinline':'true','controls':'controls'});
+	} else {
+	};
+	var myvideo = document.getElementById("video");
+	var shareTime = {$sharetime};
+	myvideo.ontimeupdate = function() {
+		if( myvideo.currentTime >= shareTime){
+			show_tip();
+			myvideo.pause();
+		}
+	}
+</script>
+</body>
+</html>

